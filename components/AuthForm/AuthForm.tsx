@@ -13,6 +13,8 @@ import { Separator } from "../ui/separator"
 import AuthSocialButton from "../ui/AuthSocialButton"
 
 import {BsGithub, BsGoogle} from 'react-icons/bs';
+import toast from "react-hot-toast";
+import {signIn} from 'next-auth/react';
 
 type Variant = 'LOGIN' | 'REGISTER'
 
@@ -51,18 +53,35 @@ export default function AuthForm() {
         setIsLoading(true);
 
         if(variant === 'REGISTER'){
-            axios.post('/api/register', values)
+            axios.post('/api/register', values).then(() => toast.success('Successfully registered!')).finally(() => setIsLoading(false))
         }
 
         if(variant === 'LOGIN'){
-            console.log('Setting isLoading to true for Login');
+            signIn('credentials', {
+                ...values,
+                redirect: false
+            }).then((callback) => {
+                if(callback?.error){
+                    toast.error('Invalid Credentials')
+                }
+                if(callback?.ok && !callback?.error){
+                    toast.success('Logged in!')
+                }
+            }).finally(() => setIsLoading(false))
         }
     }
 
     function socialAction(action: string){
         setIsLoading(true);
 
-        //Next-Auth Social Sign-in
+        signIn(action, {redirect: false}).then((callback) => {
+            if(callback?.error){
+                toast.error('Invalid Credentials')
+            }
+            if(callback?.ok && !callback?.error){
+                toast.success('Logged in!')
+            }
+        }).finally(() => setIsLoading(false))
     }
 
     return (
