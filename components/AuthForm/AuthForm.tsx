@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
+import axios from 'axios';
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -50,7 +51,7 @@ export default function AuthForm() {
         setIsLoading(true);
 
         if(variant === 'REGISTER'){
-            // axios register
+            axios.post('/api/register', values)
         }
 
         if(variant === 'LOGIN'){
